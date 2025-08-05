@@ -1,0 +1,58 @@
+:root {
+    /* Colores principales */
+    --color-primary: #d72638;
+    /* Rojo principal */
+    --color-accent: #a4161a;
+    /* Rojo oscuro/acento */
+
+    /* Fondo y superficies */
+    --color-background: #ffffff;
+    /* Fondo blanco */
+    --color-surface: #f4f4f4;
+    /* Superficie clara (tarjetas, menús) */
+
+    /* Texto */
+    --color-text: #0d0d0d;
+    /* Texto principal negro */
+    --color-text-muted: #555555;
+    /* Texto secundario */
+
+    /* Bordes y separadores */
+    --color-border: #dddddd;
+}
+
+/* === Tema Oscuro (cuando se añade .dark a <html> o <body>) === */
+.dark {
+    --color-primary: #d72638;
+    --color-accent: #a4161a;
+
+    --color-background: #0d0d0d;
+    /* Fondo negro */
+    --color-surface: #1a1a1a;
+    /* Superficie oscura */
+
+    --color-text: #ffffff;
+    --color-text-muted: #cccccc;
+
+    --color-border: #2b2b2b;
+}
+
+.hide-on-mobile {
+    display: block;
+}
+
+@media (max-width: 768px) {
+    .hide-on-mobile {
+        display: none;
+    }
+}
+
+.show-only-on-mobile {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .show-only-on-mobile {
+        display: block;
+    }
+}
