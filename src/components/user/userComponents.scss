@@ -25,6 +25,18 @@
             display: flex;
             gap: 20px;
             list-style: none;
+
+            .active-link {
+                font-weight: 700;
+                padding-bottom: 5px;
+                border-bottom: 2px solid white;
+            }
+
+            a {
+                text-decoration: none;
+                color: white;
+                transition: all ease-in 0.1s;
+            }
         }
 
         &-mobile {

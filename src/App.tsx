@@ -1,10 +1,10 @@
-import UserLayout from "@/layouts/UserLayout/UserLayout"
 import './App.css';
+import AppRouter from "./routes/AppRouter";
 
 function App() {
 
   return (
-    <UserLayout />
+    <AppRouter />
   )
 }
 

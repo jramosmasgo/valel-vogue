@@ -1,9 +1,10 @@
-import React from 'react'
-import Header from '@/components/user/Header'
-import './userLayout.scss';
-import { BlackLogo } from '@/config/assets';
-import HomeUser from '@/pages/user/Home';
 import Footer from '@/components/user/Footer';
+import Header from '@/components/user/Header';
+import { BlackLogo } from '@/config/assets';
+import React from 'react';
+import { Outlet } from 'react-router-dom';
+import './userLayout.scss';
+
 
 const UserLayout: React.FC = () => {
     return (
@@ -26,7 +27,7 @@ const UserLayout: React.FC = () => {
                 }}
             />
             <div style={{ position: 'relative', zIndex: 1, minHeight: '100vh' }}>
-                <HomeUser />
+                <Outlet />
             </div>
             <Footer />
         </div>
