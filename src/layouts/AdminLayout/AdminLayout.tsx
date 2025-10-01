@@ -1,7 +1,11 @@
-import React from 'react'
+import React from 'react';
+import { Outlet } from 'react-router-dom';
+import "./adminLayout.scss";
 
 export const AdminLayout: React.FC = () => {
     return (
-        <div>AdminLayout</div>
+        <div className='admin-layout'>
+            <Outlet />
+        </div>
     )
 }
