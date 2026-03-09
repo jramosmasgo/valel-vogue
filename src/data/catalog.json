@@ -1,0 +1,153 @@
+{
+    "superCategories": [
+        {
+            "id": 1,
+            "name": "Hombres",
+            "status": "active"
+        },
+        {
+            "id": 2,
+            "name": "Mujeres",
+            "status": "active"
+        },
+        {
+            "id": 3,
+            "name": "Niños",
+            "status": "active"
+        },
+        {
+            "id": 4,
+            "name": "Accesorios",
+            "status": "active"
+        }
+    ],
+    "categories": [
+        {
+            "id": 1,
+            "name": "Casacas",
+            "superCategoryId": 1,
+            "status": "active"
+        },
+        {
+            "id": 2,
+            "name": "Pantalones",
+            "superCategoryId": 1,
+            "status": "active"
+        },
+        {
+            "id": 3,
+            "name": "Vestidos",
+            "superCategoryId": 2,
+            "status": "active"
+        },
+        {
+            "id": 4,
+            "name": "Faldas",
+            "superCategoryId": 2,
+            "status": "active"
+        },
+        {
+            "id": 5,
+            "name": "Polos",
+            "superCategoryId": 1,
+            "status": "active"
+        }
+    ],
+    "sizes": [
+        {
+            "id": "s1",
+            "name": "XS",
+            "status": "active"
+        },
+        {
+            "id": "s2",
+            "name": "S",
+            "status": "active"
+        },
+        {
+            "id": "s3",
+            "name": "M",
+            "status": "active"
+        },
+        {
+            "id": "s4",
+            "name": "L",
+            "status": "active"
+        },
+        {
+            "id": "s5",
+            "name": "XL",
+            "status": "active"
+        },
+        {
+            "id": "s6",
+            "name": "XXL",
+            "status": "active"
+        },
+        {
+            "id": "n26",
+            "name": "26",
+            "status": "active"
+        },
+        {
+            "id": "n27",
+            "name": "27",
+            "status": "active"
+        },
+        {
+            "id": "n28",
+            "name": "28",
+            "status": "active"
+        },
+        {
+            "id": "n29",
+            "name": "29",
+            "status": "active"
+        },
+        {
+            "id": "n30",
+            "name": "30",
+            "status": "active"
+        },
+        {
+            "id": "n32",
+            "name": "32",
+            "status": "active"
+        },
+        {
+            "id": "n34",
+            "name": "34",
+            "status": "active"
+        },
+        {
+            "id": "n36",
+            "name": "36",
+            "status": "active"
+        },
+        {
+            "id": "n38",
+            "name": "38",
+            "status": "active"
+        },
+        {
+            "id": "n40",
+            "name": "40",
+            "status": "active"
+        },
+        {
+            "id": "n42",
+            "name": "42",
+            "status": "active"
+        },
+        {
+            "id": "n44",
+            "name": "44",
+            "status": "active"
+        },
+        {
+            "id": "n46",
+            "name": "46",
+            "status": "active"
+        }
+    ]
+}

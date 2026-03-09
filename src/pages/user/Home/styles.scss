@@ -1,82 +1,105 @@
 .home-user {
     background: transparent;
     width: 100%;
+    padding-bottom: 4rem;
 
     &-categories {
         display: flex;
         justify-content: center;
-        gap: 5px;
-        margin-bottom: 20px;
+        gap: 12px;
+        margin: 1.5rem 0 2.5rem;
         overflow-x: auto;
         white-space: nowrap;
-        scroll-padding-left: 1rem;
+        padding: 0.5rem 2rem;
         scrollbar-width: none;
         -ms-overflow-style: none;
 
+        &::-webkit-scrollbar {
+            display: none;
+        }
+
         @media (max-width: 768px) {
-            justify-content: start;
-            padding-left: 10px;
-            padding-right: 10px;
-            margin-bottom: 10px;
+            justify-content: flex-start;
+            padding: 0.5rem 1rem;
         }
 
         button {
+            display: flex;
             align-items: center;
-            border-radius: 5px;
-            padding: 5px 10px;
-            border: none;
-            color: var(--color-text);
-            border: 2px solid var(--color-text);
-            background: var(--color-background);
+            border-radius: 50px;
+            /* Fully rounded */
+            padding: 8px 18px;
+            border: 1px solid var(--color-border);
+            color: var(--color-text-muted);
+            background: white;
             cursor: pointer;
-            font-weight: 700;
+            font-weight: 500;
+            font-size: 0.85rem;
+            transition: all var(--transition-normal);
+            box-shadow: var(--shadow-sm);
 
             &:hover {
-                background: var(--color-text);
-                color: var(--color-background);
-                border: 1px solid (--color-background);
+                background: var(--color-surface-hover);
+                border-color: var(--color-text-muted);
+                color: var(--color-text);
+                transform: translateY(-2px);
             }
         }
 
         .category-active {
-            background: var(--color-text);
-            color: var(--color-background);
-            border: 1px solid (--color-background);
+            background: var(--color-text) !important;
+            color: white !important;
+            border-color: var(--color-text) !important;
+            box-shadow: var(--shadow-md);
+            font-weight: 600;
         }
     }
 
     &-navigation {
-        margin: 20px 0;
+        margin: 2rem 0 1rem;
         display: flex;
-        gap: 0.5rem;
+        gap: 1rem;
         overflow-x: auto;
         white-space: nowrap;
-        padding: 1rem;
-        scroll-padding-left: 1rem;
+        padding: 1rem 2rem;
         scrollbar-width: none;
         -ms-overflow-style: none;
         justify-content: center;
 
-        @media (max-width: 768px) {
-            justify-content: start;
+        &::-webkit-scrollbar {
+            display: none;
         }
 
-        &::-webkit-scrollbar {
-            display: none; // Chrome, Safari
+        @media (max-width: 768px) {
+            justify-content: flex-start;
+            padding: 1rem;
         }
 
         button {
             text-transform: uppercase;
-            padding: 10px 30px;
-            background: var(--color-background);
-            color: var(--color-primary);
-            border: 2px solid var(--color-primary);
+            padding: 12px 36px;
+            background: white;
+            color: var(--color-text);
+            border: 1px solid var(--color-border);
+            border-radius: 4px;
+            /* Stylish subtle radius */
             cursor: pointer;
-            transition: all 0.2s ease-in;
+            font-weight: 700;
+            letter-spacing: 1px;
+            font-size: 0.8rem;
+            transition: all var(--transition-normal);
+            box-shadow: var(--shadow-sm);
 
             &:hover {
+                background: var(--color-text);
+                color: white;
+                box-shadow: var(--shadow-md);
+            }
+
+            &.nav-active {
                 background: var(--color-primary);
-                color: var(--color-background);
+                color: white;
+                border-color: var(--color-primary);
             }
         }
     }
@@ -85,30 +108,55 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 5px;
-        margin-top: 10px;
-        margin-bottom: 30px;
+        gap: 8px;
+        margin: 4rem 0 2rem;
 
         button {
-            padding: 10px 15px;
-            border: none;
-            background: var(--color-primary);
-            color: var(--color-background);
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--color-border);
+            background: white;
+            color: var(--color-text);
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+
+            &:hover {
+                background: var(--color-surface-hover);
+                border-color: var(--color-text);
+            }
+
+            &.page-active {
+                background: var(--color-text);
+                color: white;
+                border-color: var(--color-text);
+            }
         }
     }
 }
 
 .product-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr); // PC: 4 columnas
-    gap: 1.8rem;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2rem;
+    padding: 1rem clamp(1rem, 5vw, 6rem);
 
-    padding-left: clamp(1rem, 5vw, 6rem);
-    padding-right: clamp(1rem, 5vw, 6rem);
-    padding-top: 1rem;
-    padding-bottom: 1rem;
+    @media (max-width: 1200px) {
+        grid-template-columns: repeat(3, 1fr);
+    }
 
-    @media (max-width: 768px) {
-        grid-template-columns: repeat(2, 1fr); // Mobile: 2 columnas
+    @media (max-width: 900px) {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+    }
+
+    @media (max-width: 480px) {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+        padding: 1rem;
     }
 }

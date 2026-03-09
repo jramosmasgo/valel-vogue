@@ -14,7 +14,7 @@ const UserLayout: React.FC = () => {
             <div
                 style={{
                     position: 'absolute',
-                    top: '100px',
+                    top: '80px',
                     left: 0,
                     right: 0,
                     bottom: 0,

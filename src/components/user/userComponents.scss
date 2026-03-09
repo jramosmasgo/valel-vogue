@@ -1,77 +1,124 @@
 .header {
     width: 100%;
-    height: 100px;
-    background: var(--color-text);
+    height: 80px;
+    /* Reduced for better prominence */
+    background: rgba(var(--color-text), 0.95);
+    /* Keep it slightly dark but premium */
+    background: #111;
     color: white;
     display: flex;
-    padding: 0px 90px;
+    padding: 0px 80px;
     align-items: center;
     justify-content: space-between;
     position: sticky;
     top: 0;
     right: 0;
-    z-index: 2;
+    z-index: 1000;
+    box-shadow: var(--shadow-md);
+    backdrop-filter: blur(8px);
+    transition: var(--transition-normal);
 
     &-logo {
-        height: 40%;
+        height: 45%;
+        transition: transform var(--transition-fast);
 
         img {
             height: 100%;
+            display: block;
+        }
+
+        &:hover {
+            transform: scale(1.05);
         }
     }
 
     &-menu {
         ul {
             display: flex;
-            gap: 20px;
+            gap: 40px;
+            /* More spacing */
             list-style: none;
 
+            li {
+                position: relative;
+            }
+
             .active-link {
+                color: var(--color-primary) !important;
                 font-weight: 700;
-                padding-bottom: 5px;
-                border-bottom: 2px solid white;
+
+                &::after {
+                    content: '';
+                    position: absolute;
+                    bottom: -5px;
+                    left: 0;
+                    width: 100%;
+                    height: 2px;
+                    background-color: var(--color-primary);
+                    border-radius: 2px;
+                }
             }
 
             a {
                 text-decoration: none;
-                color: white;
-                transition: all ease-in 0.1s;
+                color: rgba(255, 255, 255, 0.85);
+                font-size: 0.95rem;
+                font-weight: 500;
+                letter-spacing: 0.5px;
+                transition: var(--transition-fast);
+
+                &:hover {
+                    color: white;
+                }
             }
         }
 
         &-mobile {
             position: fixed;
-            top: 100px;
-            right: 0;
+            top: 0;
+            left: 0;
+            height: 100vh;
             background: #000;
             width: 100%;
-            padding: 20px;
+            padding: 80px 20px;
             display: flex;
             align-items: center;
             justify-content: center;
             opacity: 0;
             pointer-events: none;
-            transform: scaleY(0.95);
-            transform-origin: top;
-            transition: opacity 0.8s ease, transform 0.3s ease;
+            z-index: 999;
+            clip-path: circle(0% at right top);
+            transition: opacity 0.4s ease, clip-path 0.5s cubic-bezier(0.77, 0, 0.175, 1);
 
             &-show {
                 opacity: 1;
                 pointer-events: auto;
-                transform: scaleY(1);
+                clip-path: circle(150% at right top);
             }
 
             ul {
                 display: flex;
                 list-style: none;
-                gap: 30px;
+                gap: 40px;
                 flex-direction: column;
-                width: min-content;
+                width: 100%;
                 justify-content: center;
                 align-items: center;
 
                 li {
                     width: max-content;
+                    font-size: 1.5rem;
+                    font-weight: 700;
+                    text-transform: uppercase;
+                    letter-spacing: 2px;
+                    color: white;
+                    cursor: pointer;
+                    transition: var(--transition-fast);
+
+                    &:hover {
+                        color: var(--color-primary);
+                        transform: translateY(-5px);
+                    }
                 }
             }
         }
@@ -79,15 +126,38 @@
 }
 
 .footer {
-    background-color: #222;
-    color: #fff;
+    background-color: #0d0d0d;
+    color: rgba(255, 255, 255, 0.7);
     text-align: center;
-    padding: 1rem 0;
-    font-size: 0.9rem;
+    padding: 3rem 0;
+    font-size: 0.85rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+
+    p {
+        max-width: 600px;
+        margin: 0 auto;
+    }
+}
+
+.hamburger-icon {
+    z-index: 1001;
+    cursor: pointer;
+    transition: transform var(--transition-fast);
+
+    &:hover {
+        transform: scale(1.1);
+    }
+}
+
+@media (max-width: 1024px) {
+    .header {
+        padding: 0 40px;
+    }
 }
 
 @media (max-width: 768px) {
     .header {
-        padding: 0 30px;
+        height: 70px;
+        padding: 0 20px;
     }
 }

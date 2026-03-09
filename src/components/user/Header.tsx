@@ -22,17 +22,20 @@ const Header: React.FC = () => {
                     </li>
                 </ul>
             </nav>
-            <div className='show-only-on-mobile' onClick={() => setShowMenu(!showMenu)}>
-                <AlignJustify size={30} />
+            <div className='show-only-on-mobile hamburger-icon' onClick={() => setShowMenu(!showMenu)}>
+                <AlignJustify size={28} color="white" />
             </div>
-            {
-                <nav className={`header-menu-mobile ${showMenu ? 'header-menu-mobile-show' : ''}`}>
-                    <ul>
-                        <li>Inicio</li>
-                        <li>Nosotros</li>
-                    </ul>
-                </nav>
-            }
+            <nav className={`header-menu-mobile ${showMenu ? 'header-menu-mobile-show' : ''}`}>
+                <ul>
+                    <li>
+                        <NavLink to="/home" className={({ isActive }) => isActive ? "active-link" : ""} onClick={() => setShowMenu(false)}>Inicio</NavLink>
+                    </li>
+                    <li>
+                        <NavLink to="/about" className={({ isActive }) => isActive ? "active-link" : ""} onClick={() => setShowMenu(false)}>Nosotros</NavLink>
+                    </li>
+                </ul>
+            </nav>
+
         </div>
     )
 }

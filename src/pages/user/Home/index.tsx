@@ -10,7 +10,7 @@ const HomeUser: React.FC = () => {
     return (
         <div className='home-user'>
             <div className='home-user-navigation'>
-                <button>Todos</button>
+                <button className='nav-active'>Todos</button>
                 <button>Hombres</button>
                 <button>Mujeres</button>
                 <button>Niños</button>
@@ -35,11 +35,12 @@ const HomeUser: React.FC = () => {
                 <CardProduct />
             </div>
             <div className='home-user-pagination'>
-                <button>1</button>
+                <button className='page-active'>1</button>
                 <button>2</button>
                 <button>3</button>
                 <button>4</button>
             </div>
+
             <Dialog.Root open={openModal} onOpenChange={setOpenModal}>
                 <ProductDetails />
             </Dialog.Root>
