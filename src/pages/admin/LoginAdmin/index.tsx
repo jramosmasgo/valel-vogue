@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Mail, Lock, LogIn } from 'lucide-react';
-import { loginWithEmail } from '@/services/authentication';
+import { loginWithEmail, logout } from '@/services/authentication';
+import { collection, query, where, getDocs } from 'firebase/firestore';
+import { db } from '@/config/firebase';
 import './styles.scss';
 
 const LoginAdmin: React.FC = () => {
@@ -14,9 +16,31 @@ const LoginAdmin: React.FC = () => {
         setError(null);
         setIsLoading(true);
         try {
+            // 1. Autenticar con Firebase Auth
             await loginWithEmail({ email, password });
-            // No need to navigate manually — GuestRoute detects the auth state
-            // change via AuthContext and redirects to /admin/products automatically.
+
+            // 2. Verificar que el usuario existe en la colección "users" por email
+            const usersRef = collection(db, 'users');
+            const q = query(usersRef, where('email', '==', email));
+            const snapshot = await getDocs(q);
+
+            if (snapshot.empty) {
+                await logout();
+                setError('Tu cuenta no está registrada en el sistema. Contacta al administrador.');
+                return;
+            }
+
+            const userData = snapshot.docs[0].data();
+
+            // 3. Verificar que el usuario esté activo
+            if (userData?.status === false) {
+                await logout();
+                setError('Tu cuenta está inactiva. Contacta al administrador para reactivarla.');
+                return;
+            }
+
+            // 4. Todo correcto → GuestRoute detecta el cambio y redirige automáticamente
+
         } catch (err: unknown) {
             const msg = (err as { message?: string }).message ?? '';
             if (msg.includes('user-not-found') || msg.includes('wrong-password') || msg.includes('invalid-credential')) {
@@ -30,7 +54,6 @@ const LoginAdmin: React.FC = () => {
             setIsLoading(false);
         }
     };
-
 
     return (
         <div className="login-wrapper">

@@ -1,16 +1,14 @@
 // Catalog types shared across catalog services
 
-export type ItemStatus = 'active' | 'inactive';
-
 export interface SuperCategory {
     id: string;
     name: string;
-    status: ItemStatus;
+    status: boolean | string;
 }
 
 export interface Category {
     id: string;
     name: string;
-    superCategoryId: string;
-    status: ItemStatus;
+    superCategoryId?: string;
+    status: boolean | string;
 }

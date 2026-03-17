@@ -1,0 +1,161 @@
+.admin-overview {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    animation: fadeIn 0.4s ease-out;
+
+    .overview-header {
+        h3 {
+            font-size: 1.75rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.5px;
+            color: var(--color-text);
+        }
+
+        p {
+            color: var(--color-text-muted);
+            font-size: 0.95rem;
+        }
+    }
+
+    .loading-state {
+        padding: 4rem;
+        text-align: center;
+        color: var(--color-text-muted);
+        font-weight: 600;
+        background: white;
+        border-radius: 16px;
+        box-shadow: var(--shadow-sm);
+        border: 1px solid var(--color-border);
+    }
+
+    .metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.5rem;
+
+        .metric-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            border: 1px solid var(--color-border);
+            box-shadow: var(--shadow-sm);
+            transition: all var(--transition-normal);
+            position: relative;
+            overflow: hidden;
+
+            &:hover {
+                transform: translateY(-5px);
+                box-shadow: var(--shadow-md);
+            }
+
+            .metric-icon {
+                width: 56px;
+                height: 56px;
+                border-radius: 16px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: white;
+                box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+                z-index: 2;
+            }
+
+            .metric-info {
+                display: flex;
+                flex-direction: column;
+                z-index: 2;
+
+                .metric-value {
+                    font-size: 2rem;
+                    font-weight: 800;
+                    color: var(--color-text);
+                    line-height: 1.2;
+                }
+
+                .metric-label {
+                    font-size: 0.9rem;
+                    color: var(--color-text-muted);
+                    font-weight: 500;
+                }
+            }
+
+            &.pattern-1 .metric-icon {
+                background: linear-gradient(135deg, #ff416c, #ff4b2b);
+            }
+
+            &.pattern-2 .metric-icon {
+                background: linear-gradient(135deg, #4776e6, #8e54e9);
+            }
+
+            &.pattern-3 .metric-icon {
+                background: linear-gradient(135deg, #00b09b, #96c93d);
+            }
+
+            &::after {
+                content: '';
+                position: absolute;
+                right: -20px;
+                bottom: -20px;
+                width: 100px;
+                height: 100px;
+                border-radius: 50%;
+                background: var(--color-surface);
+                opacity: 0.5;
+                z-index: 1;
+            }
+        }
+    }
+
+    .dashboard-content {
+        background: white;
+        border-radius: 20px;
+        padding: 3rem;
+        border: 1px solid var(--color-border);
+        box-shadow: var(--shadow-sm);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 250px;
+
+        .empty-state {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+
+            .empty-icon {
+                color: var(--color-border);
+            }
+
+            h4 {
+                font-size: 1.2rem;
+                font-weight: 700;
+                color: var(--color-text);
+            }
+
+            p {
+                color: var(--color-text-muted);
+                font-size: 0.95rem;
+                max-width: 300px;
+            }
+        }
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

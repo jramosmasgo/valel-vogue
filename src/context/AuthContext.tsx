@@ -1,42 +1,99 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { onAuthChange } from '@/services/authentication';
 import type { AuthUser } from '@/services/authentication';
+import { collection, query, where, onSnapshot } from 'firebase/firestore';
+import { db } from '@/config/firebase';
+import type { User as UserProfile } from '@/services/users/users.types';
+
+// ── Constants ──────────────────────────────────────────────────────────────
+
+const PROFILE_STORAGE_KEY = 'vv_user_profile';
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
 interface AuthState {
     user: AuthUser | null;
-    isLoading: boolean;   // true while Firebase resolves the initial session
+    userProfile: UserProfile | null;
+    isLoading: boolean;
     isAuthenticated: boolean;
 }
 
-interface AuthContextValue extends AuthState {
-    // setUser is not exposed; state is driven only by Firebase callbacks
-}
+interface AuthContextValue extends AuthState { }
 
 // ── Context ────────────────────────────────────────────────────────────────
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
+// ── Helpers ────────────────────────────────────────────────────────────────
+
+const readProfileFromStorage = (): UserProfile | null => {
+    try {
+        const raw = localStorage.getItem(PROFILE_STORAGE_KEY);
+        return raw ? (JSON.parse(raw) as UserProfile) : null;
+    } catch {
+        return null;
+    }
+};
+
 // ── Provider ───────────────────────────────────────────────────────────────
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [user, setUser] = useState<AuthUser | null>(null);
-    const [isLoading, setIsLoading] = useState(true); // start true → waiting for Firebase
+    const [userProfile, setUserProfile] = useState<UserProfile | null>(readProfileFromStorage);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        // Subscribe to Firebase auth state changes.
-        // Returns the unsubscribe function, which React calls on unmount.
-        const unsubscribe = onAuthChange((firebaseUser) => {
+        let unsubscribeProfile: (() => void) | null = null;
+
+        const unsubscribeAuth = onAuthChange((firebaseUser) => {
             setUser(firebaseUser);
-            setIsLoading(false);
+
+            // Cancel any previous profile listener
+            if (unsubscribeProfile) {
+                unsubscribeProfile();
+                unsubscribeProfile = null;
+            }
+
+            if (firebaseUser && firebaseUser.email) {
+                // Subscribe to profile changes in Firestore
+                const q = query(
+                    collection(db, 'users'),
+                    where('email', '==', firebaseUser.email)
+                );
+
+                unsubscribeProfile = onSnapshot(q, (snapshot) => {
+                    if (!snapshot.empty) {
+                        const profile = {
+                            id: snapshot.docs[0].id,
+                            ...snapshot.docs[0].data(),
+                        } as UserProfile;
+                        setUserProfile(profile);
+                        localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(profile));
+                    } else {
+                        setUserProfile(null);
+                        localStorage.removeItem(PROFILE_STORAGE_KEY);
+                    }
+                    setIsLoading(false);
+                }, (error) => {
+                    console.error('Error fetching user profile:', error);
+                    setIsLoading(false);
+                });
+            } else {
+                setUserProfile(null);
+                localStorage.removeItem(PROFILE_STORAGE_KEY);
+                setIsLoading(false);
+            }
         });
 
-        return unsubscribe;
+        return () => {
+            unsubscribeAuth();
+            if (unsubscribeProfile) unsubscribeProfile();
+        };
     }, []);
 
     const value: AuthContextValue = {
         user,
+        userProfile,
         isLoading,
         isAuthenticated: !!user,
     };
@@ -50,17 +107,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
 // ── Hook ───────────────────────────────────────────────────────────────────
 
-/**
- * Consume the AuthContext.
- * Must be used inside <AuthProvider>.
- *
- * @example
- * const { user, isAuthenticated, isLoading } = useAuth();
- */
 export const useAuth = (): AuthContextValue => {
     const ctx = useContext(AuthContext);
-    if (!ctx) {
-        throw new Error('useAuth must be used inside <AuthProvider>');
-    }
+    if (!ctx) throw new Error('useAuth must be used inside <AuthProvider>');
     return ctx;
 };

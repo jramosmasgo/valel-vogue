@@ -71,3 +71,86 @@
         display: block;
     }
 }
+
+/* === Global Form Styles === */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    margin-bottom: 1.25rem;
+}
+
+.form-label {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--color-text);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    opacity: 0.85;
+}
+
+.form-input,
+.form-textarea,
+input:not([type='checkbox']):not([type='radio']):not([type='button']):not([type='submit']),
+select:not(.no-style),
+textarea:not(.no-style) {
+    width: 100%;
+    padding: 0.9rem 1.2rem;
+    border-radius: 12px;
+    border: 2.5px solid var(--color-border);
+    background-color: #fafbfc;
+    color: var(--color-text);
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: all var(--transition-normal);
+    outline: none;
+    appearance: none;
+}
+
+.form-textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+/* Specific for select to add the custom arrow */
+select.form-input,
+select:not(.no-style) {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1.2rem center;
+    background-size: 1.1rem;
+    padding-right: 3rem;
+    cursor: pointer;
+}
+
+.form-input:hover,
+.form-textarea:hover,
+input:not([type='checkbox']):not([type='radio']):not([type='button']):not([type='submit']):hover {
+    border-color: var(--color-text-light);
+    background-color: #fff;
+}
+
+.form-input:focus,
+.form-textarea:focus,
+input:not([type='checkbox']):not([type='radio']):not([type='button']):not([type='submit']):focus,
+select:not(.no-style):focus {
+    border-color: var(--color-primary);
+    background-color: #fff;
+    box-shadow: 0 0 0 5px rgba(var(--color-primary-rgb), 0.12);
+    transform: translateY(-1px);
+}
+
+.form-input::placeholder,
+.form-textarea::placeholder {
+    color: var(--color-text-light);
+    font-weight: 500;
+    opacity: 0.8;
+}
+
+.form-input:disabled {
+    background-color: var(--color-surface);
+    cursor: not-allowed;
+    opacity: 0.7;
+    border-style: dashed;
+}

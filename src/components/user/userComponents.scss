@@ -78,7 +78,8 @@
             top: 0;
             left: 0;
             height: 100vh;
-            background: #000;
+            background: rgba(10, 10, 10, 0.98);
+            backdrop-filter: blur(15px);
             width: 100%;
             padding: 80px 20px;
             display: flex;
@@ -107,17 +108,30 @@
 
                 li {
                     width: max-content;
-                    font-size: 1.5rem;
-                    font-weight: 700;
-                    text-transform: uppercase;
-                    letter-spacing: 2px;
-                    color: white;
                     cursor: pointer;
                     transition: var(--transition-fast);
 
                     &:hover {
-                        color: var(--color-primary);
                         transform: translateY(-5px);
+                    }
+
+                    a {
+                        text-decoration: none;
+                        font-size: 1.8rem;
+                        font-weight: 800;
+                        text-transform: uppercase;
+                        letter-spacing: 3px;
+                        color: rgba(255, 255, 255, 0.7);
+                        transition: all var(--transition-fast);
+
+                        &:hover {
+                            color: white;
+                        }
+
+                        &.active-link {
+                            color: var(--color-primary);
+                            text-shadow: 0 0 15px rgba(255, 65, 108, 0.4);
+                        }
                     }
                 }
             }

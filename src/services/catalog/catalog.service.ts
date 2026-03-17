@@ -18,7 +18,7 @@ import type { Category, SuperCategory } from './catalog.types';
 
 // ── Collection References ──────────────────────────────────────────────────
 
-const superCategoriesRef = collection(db, 'superCategories') as CollectionReference<DocumentData>;
+const superCategoriesRef = collection(db, 'supercategories') as CollectionReference<DocumentData>;
 const categoriesRef      = collection(db, 'categories')      as CollectionReference<DocumentData>;
 
 // ── Helpers ────────────────────────────────────────────────────────────────
@@ -60,7 +60,7 @@ export const updateSuperCategory = async (
     id: string,
     data: Partial<Omit<SuperCategory, 'id'>>
 ): Promise<void> => {
-    const docRef = doc(db, 'superCategories', id);
+    const docRef = doc(db, 'supercategories', id);
     await updateDoc(docRef, data);
 };
 

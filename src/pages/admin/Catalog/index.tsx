@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Edit2, X, Tag, List, Maximize2 } from 'lucide-react';
+import { toast } from 'react-toastify';
 import './styles.scss';
 import catalogData from '@/data/catalog.json';
 import {
@@ -34,13 +35,11 @@ const CatalogManagement: React.FC = () => {
     // Form states
     const [formData, setFormData] = useState({
         name: '',
-        superCategoryId: '',
-        status: 'active' as 'active' | 'inactive',
+        status: true as boolean,
+        statusSize: 'active' as 'active' | 'inactive',
         sizeType: 'letter' as 'letter' | 'number'
     });
 
-    // Error state for validation feedback
-    const [error, setError] = useState<string | null>(null);
 
     // Main States
     const [superCategories, setSuperCategories] = useState<ISuperCategory[]>([]);
@@ -52,6 +51,7 @@ const CatalogManagement: React.FC = () => {
     useEffect(() => {
         const fetchData = async () => {
             setIsLoading(true);
+            const toastId = toast.loading('Cargando catálogo...');
             try {
                 // 1. Fetch Firestore data
                 const [fbSuper, fbCat] = await Promise.all([
@@ -69,9 +69,10 @@ const CatalogManagement: React.FC = () => {
                 } else {
                     setSizes(catalogData.sizes as Size[]);
                 }
+                toast.update(toastId, { render: 'Catálogo cargado', type: 'success', isLoading: false, autoClose: 2000 });
             } catch (err) {
-                console.error("Error fetching catalog data:", err);
-                setError("Ocurrió un error al cargar los datos.");
+                console.error('Error fetching catalog data:', err);
+                toast.update(toastId, { render: 'Error al cargar los datos', type: 'error', isLoading: false, autoClose: 3000 });
             } finally {
                 setIsLoading(false);
             }
@@ -93,7 +94,6 @@ const CatalogManagement: React.FC = () => {
     const handleOpenModal = (item: any = null) => {
         setIsEditing(!!item);
         setSelectedItem(item);
-        setError(null);
         if (item) {
             // Infer size type for existing items if in sizes tab
             let type: 'letter' | 'number' = 'letter';
@@ -103,15 +103,15 @@ const CatalogManagement: React.FC = () => {
 
             setFormData({
                 name: item.name,
-                superCategoryId: item.superCategoryId?.toString() || '',
-                status: item.status,
+                status: activeTab !== 'sizes' ? (item.status as boolean) : true,
+                statusSize: activeTab === 'sizes' ? (item.status as 'active' | 'inactive') : 'active',
                 sizeType: type
             });
         } else {
             setFormData({
                 name: '',
-                superCategoryId: '',
-                status: 'active',
+                status: true,
+                statusSize: 'active',
                 sizeType: 'letter'
             });
         }
@@ -119,18 +119,17 @@ const CatalogManagement: React.FC = () => {
     };
 
     const handleSave = async () => {
-        setError(null);
         let finalName = formData.name.trim();
 
         if (!finalName) {
-            setError('El nombre no puede estar vacío');
+            toast.warning('El nombre no puede estar vacío');
             return;
         }
 
         if (activeTab === 'sizes') {
             if (formData.sizeType === 'number') {
                 if (isNaN(Number(finalName))) {
-                    setError('Debe ingresar un valor numérico');
+                    toast.warning('Debe ingresar un valor numérico');
                     return;
                 }
             } else {
@@ -143,15 +142,21 @@ const CatalogManagement: React.FC = () => {
             );
 
             if (isDuplicate) {
-                setError(`La talla "${finalName}" ya existe en el catálogo`);
+                toast.warning(`La talla "${finalName}" ya existe en el catálogo`);
                 return;
             }
         }
 
+        const entityName =
+            activeTab === 'supercategories' ? 'Supercategoría' :
+                activeTab === 'categories' ? 'Categoría' : 'Talla';
+        const action = isEditing ? 'actualizada' : 'creada';
+        const toastId = toast.loading(`${isEditing ? 'Actualizando' : 'Creando'} ${entityName.toLowerCase()}...`);
+
         try {
             if (activeTab === 'supercategories') {
                 if (isEditing) {
-                    await updateSuperCategory(selectedItem.id.toString(), {
+                    await updateSuperCategory(selectedItem.id, {
                         name: finalName,
                         status: formData.status
                     });
@@ -164,42 +169,48 @@ const CatalogManagement: React.FC = () => {
                 }
             } else if (activeTab === 'categories') {
                 if (isEditing) {
-                    await updateCategory(selectedItem.id.toString(), {
+                    await updateCategory(selectedItem.id, {
                         name: finalName,
-                        superCategoryId: formData.superCategoryId,
                         status: formData.status
                     });
                     setCategories(prev => prev.map(c =>
-                        c.id === selectedItem.id ? { ...c, name: finalName, superCategoryId: formData.superCategoryId, status: formData.status } : c
+                        c.id === selectedItem.id ? { ...c, name: finalName, status: formData.status } : c
                     ));
                 } else {
                     const newId = await createCategory({
                         name: finalName,
-                        superCategoryId: formData.superCategoryId,
                         status: formData.status
                     });
-                    setCategories(prev => [...prev, { id: newId, name: finalName, superCategoryId: formData.superCategoryId, status: formData.status }]);
+                    setCategories(prev => [...prev, { id: newId, name: finalName, status: formData.status }]);
                 }
             } else if (activeTab === 'sizes') {
                 let updatedSizes;
                 if (isEditing) {
-                    updatedSizes = sizes.map(s => s.id === selectedItem.id ? { ...s, name: finalName, status: formData.status } : s);
+                    updatedSizes = sizes.map(s => s.id === selectedItem.id ? { ...s, name: finalName, status: formData.statusSize } : s);
                 } else {
-                    updatedSizes = [...sizes, { id: Date.now(), name: finalName, status: formData.status }];
+                    updatedSizes = [...sizes, { id: Date.now(), name: finalName, status: formData.statusSize }];
                 }
                 setSizes(updatedSizes);
                 persistSizes(updatedSizes);
             }
+            toast.update(toastId, {
+                render: `${entityName} ${action} correctamente`,
+                type: 'success',
+                isLoading: false,
+                autoClose: 3000,
+            });
             setModalOpen(false);
         } catch (err) {
-            console.error("Error saving data:", err);
-            setError("No se pudo guardar la información. Intente de nuevo.");
+            console.error('Error saving data:', err);
+            toast.update(toastId, {
+                render: 'No se pudo guardar la información. Intente de nuevo.',
+                type: 'error',
+                isLoading: false,
+                autoClose: 4000,
+            });
         }
     };
 
-    const getSuperCategoryName = (id: number | string) => {
-        return superCategories.find((sc: ISuperCategory) => sc.id.toString() === id.toString())?.name || 'N/A';
-    };
 
     const renderSuperCategories = () => (
         <div className='catalog-table-container'>
@@ -217,8 +228,8 @@ const CatalogManagement: React.FC = () => {
                             <tr key={item.id}>
                                 <td>{item.name}</td>
                                 <td>
-                                    <span className={`badge ${item.status}`}>
-                                        {item.status === 'active' ? 'Activo' : 'Inactivo'}
+                                    <span className={`badge ${item.status ? 'active' : 'inactive'}`}>
+                                        {item.status ? 'Activo' : 'Inactivo'}
                                     </span>
                                 </td>
                                 <td>
@@ -243,7 +254,6 @@ const CatalogManagement: React.FC = () => {
                     <thead>
                         <tr>
                             <th>Nombre</th>
-                            <th>Supercategoría</th>
                             <th>Estado</th>
                             <th>Acciones</th>
                         </tr>
@@ -252,10 +262,9 @@ const CatalogManagement: React.FC = () => {
                         {categories.map((item) => (
                             <tr key={item.id}>
                                 <td>{item.name}</td>
-                                <td>{getSuperCategoryName(item.superCategoryId)}</td>
                                 <td>
-                                    <span className={`badge ${item.status}`}>
-                                        {item.status === 'active' ? 'Activo' : 'Inactivo'}
+                                    <span className={`badge ${item.status ? 'active' : 'inactive'}`}>
+                                        {item.status ? 'Activo' : 'Inactivo'}
                                     </span>
                                 </td>
                                 <td>
@@ -380,20 +389,6 @@ const CatalogManagement: React.FC = () => {
                         </div>
 
                         <div className='modal-body'>
-                            {error && (
-                                <div style={{
-                                    background: '#fdecea',
-                                    color: '#d32f2f',
-                                    padding: '10px 15px',
-                                    borderRadius: '8px',
-                                    marginBottom: '1.5rem',
-                                    fontSize: '0.9rem',
-                                    fontWeight: '600',
-                                    border: '1px solid rgba(211, 47, 47, 0.2)'
-                                }}>
-                                    {error}
-                                </div>
-                            )}
                             <div className='form-grid' style={{ gridTemplateColumns: '1fr' }}>
                                 {activeTab === 'sizes' && (
                                     <div className='form-group'>
@@ -420,32 +415,27 @@ const CatalogManagement: React.FC = () => {
                                     />
                                 </div>
 
-                                {activeTab === 'categories' && (
-                                    <div className='form-group'>
-                                        <label className='form-label'>Supercategoría Padre</label>
-                                        <select
-                                            className='form-input'
-                                            value={formData.superCategoryId}
-                                            onChange={(e) => setFormData({ ...formData, superCategoryId: e.target.value })}
-                                        >
-                                            <option value="" disabled>Seleccionar...</option>
-                                            {superCategories.map(sc => (
-                                                <option key={sc.id} value={sc.id}>{sc.name}</option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                )}
-
                                 <div className='form-group'>
                                     <label className='form-label'>Estado</label>
-                                    <select
-                                        className='form-input'
-                                        value={formData.status}
-                                        onChange={(e) => setFormData({ ...formData, status: e.target.value as 'active' | 'inactive' })}
-                                    >
-                                        <option value="active">Activo</option>
-                                        <option value="inactive">Inactivo</option>
-                                    </select>
+                                    {activeTab === 'sizes' ? (
+                                        <select
+                                            className='form-input'
+                                            value={formData.statusSize}
+                                            onChange={(e) => setFormData({ ...formData, statusSize: e.target.value as 'active' | 'inactive' })}
+                                        >
+                                            <option value="active">Activo</option>
+                                            <option value="inactive">Inactivo</option>
+                                        </select>
+                                    ) : (
+                                        <select
+                                            className='form-input'
+                                            value={formData.status ? 'true' : 'false'}
+                                            onChange={(e) => setFormData({ ...formData, status: e.target.value === 'true' })}
+                                        >
+                                            <option value="true">Activo</option>
+                                            <option value="false">Inactivo</option>
+                                        </select>
+                                    )}
                                 </div>
                             </div>
                         </div>

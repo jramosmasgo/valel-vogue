@@ -56,29 +56,44 @@
 
             svg {
                 position: absolute;
-                left: 1rem;
+                left: 1.1rem;
                 color: var(--color-text-light);
-                transition: color 0.3s ease;
+                pointer-events: none;
+                z-index: 1;
+                transition: color var(--transition-normal);
             }
 
-            input {
+            // Alta especificidad para sobreescribir los estilos globales
+            input[type='email'],
+            input[type='password'],
+            input[type='text'] {
                 width: 100%;
-                padding: 1rem 1rem 1rem 3rem;
-                border-radius: 12px;
-                border: 2px solid var(--color-border);
-                background: #fcfcfc;
+                padding: 1rem 1.2rem 1rem 3rem !important;
+                border-radius: 14px;
+                border: 2.5px solid var(--color-border);
+                background: #fafbfc;
                 font-size: 1rem;
+                font-weight: 600;
+                color: var(--color-text);
                 transition: all 0.3s ease;
+                outline: none;
+                appearance: none;
 
                 &:focus {
-                    outline: none;
                     border-color: var(--color-primary);
                     background: white;
-                    box-shadow: 0 0 0 4px rgba(var(--color-primary-rgb, 230, 57, 70), 0.1);
+                    box-shadow: 0 0 0 5px rgba(var(--color-primary-rgb, 230, 57, 70), 0.12);
+                    transform: translateY(-1px);
 
-                    &+svg {
+                    ~svg {
                         color: var(--color-primary);
                     }
+                }
+
+                &::placeholder {
+                    color: var(--color-text-light);
+                    font-weight: 500;
+                    opacity: 0.8;
                 }
             }
         }

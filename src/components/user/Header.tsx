@@ -15,7 +15,7 @@ const Header: React.FC = () => {
             <nav className='header-menu hide-on-mobile' >
                 <ul>
                     <li>
-                        <NavLink to="/home" className={({ isActive }) => isActive ? "active-link" : ""}>Inicio</NavLink>
+                        <NavLink to="/" className={({ isActive }) => isActive ? "active-link" : ""}>Inicio</NavLink>
                     </li>
                     <li>
                         <NavLink to="/about" className={({ isActive }) => isActive ? "active-link" : ""}>About</NavLink>
@@ -28,7 +28,7 @@ const Header: React.FC = () => {
             <nav className={`header-menu-mobile ${showMenu ? 'header-menu-mobile-show' : ''}`}>
                 <ul>
                     <li>
-                        <NavLink to="/home" className={({ isActive }) => isActive ? "active-link" : ""} onClick={() => setShowMenu(false)}>Inicio</NavLink>
+                        <NavLink to="/" className={({ isActive }) => isActive ? "active-link" : ""} onClick={() => setShowMenu(false)}>Inicio</NavLink>
                     </li>
                     <li>
                         <NavLink to="/about" className={({ isActive }) => isActive ? "active-link" : ""} onClick={() => setShowMenu(false)}>Nosotros</NavLink>
