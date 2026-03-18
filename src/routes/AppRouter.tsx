@@ -9,6 +9,7 @@ import UsersManagement from '@/pages/admin/Users';
 import ProfilePage from '@/pages/admin/Profile';
 import AboutUser from '@/pages/user/About';
 import HomeUser from '@/pages/user/Home';
+import ProductPage from '@/pages/user/ProductPage';
 import ProtectedRoute from '@/routes/ProtectedRoute';
 import { useAuth } from '@/context/AuthContext';
 import React from 'react';
@@ -56,6 +57,7 @@ const AppRouter: React.FC = () => {
                     <Route index element={<HomeUser />} />
                     <Route path="home" element={<Navigate to="/" replace />} />
                     <Route path="about" element={<AboutUser />} />
+                    <Route path="producto/:id" element={<ProductPage />} />
                 </Route>
             </Routes>
         </BrowserRouter>

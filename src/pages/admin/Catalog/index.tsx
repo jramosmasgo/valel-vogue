@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Edit2, X, Tag, List, Maximize2 } from 'lucide-react';
+import { Plus, Edit2, X, Tag, List, Maximize2, Link2, Check } from 'lucide-react';
 import { toast } from 'react-toastify';
 import './styles.scss';
 import catalogData from '@/data/catalog.json';
@@ -28,6 +28,19 @@ const STORAGE_KEY = 'valel_vogue_catalog';
 
 const CatalogManagement: React.FC = () => {
     const [activeTab, setActiveTab] = useState<TabType>('supercategories');
+    const [copiedId, setCopiedId] = useState<string | number | null>(null);
+
+    const copyLink = (id: string | number, type: 'superCategory' | 'category') => {
+        const param = type === 'superCategory' ? 'superCategory' : 'category';
+        const url = `${window.location.origin}/?${param}=${id}`;
+        navigator.clipboard.writeText(url).then(() => {
+            setCopiedId(id);
+            toast.success('Link copiado al portapapeles');
+            setTimeout(() => setCopiedId(null), 2000);
+        }).catch(() => {
+            toast.error('No se pudo copiar el link');
+        });
+    };
     const [isModalOpen, setModalOpen] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [selectedItem, setSelectedItem] = useState<any>(null);
@@ -220,6 +233,7 @@ const CatalogManagement: React.FC = () => {
                         <tr>
                             <th>Nombre</th>
                             <th>Estado</th>
+                            <th>Link</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
@@ -231,6 +245,16 @@ const CatalogManagement: React.FC = () => {
                                     <span className={`badge ${item.status ? 'active' : 'inactive'}`}>
                                         {item.status ? 'Activo' : 'Inactivo'}
                                     </span>
+                                </td>
+                                <td>
+                                    <button
+                                        className={`btn-copy-link ${copiedId === item.id ? 'copied' : ''}`}
+                                        title="Copiar link de supercategoría"
+                                        onClick={() => copyLink(item.id, 'superCategory')}
+                                    >
+                                        {copiedId === item.id ? <Check size={14} /> : <Link2 size={14} />}
+                                        <span>{copiedId === item.id ? 'Copiado' : 'Copiar link'}</span>
+                                    </button>
                                 </td>
                                 <td>
                                     <div className='actions-cell'>
@@ -255,6 +279,7 @@ const CatalogManagement: React.FC = () => {
                         <tr>
                             <th>Nombre</th>
                             <th>Estado</th>
+                            <th>Link</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
@@ -266,6 +291,16 @@ const CatalogManagement: React.FC = () => {
                                     <span className={`badge ${item.status ? 'active' : 'inactive'}`}>
                                         {item.status ? 'Activo' : 'Inactivo'}
                                     </span>
+                                </td>
+                                <td>
+                                    <button
+                                        className={`btn-copy-link ${copiedId === item.id ? 'copied' : ''}`}
+                                        title="Copiar link de categoría"
+                                        onClick={() => copyLink(item.id, 'category')}
+                                    >
+                                        {copiedId === item.id ? <Check size={14} /> : <Link2 size={14} />}
+                                        <span>{copiedId === item.id ? 'Copiado' : 'Copiar link'}</span>
+                                    </button>
                                 </td>
                                 <td>
                                     <div className='actions-cell'>

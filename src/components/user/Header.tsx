@@ -1,11 +1,22 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import './userComponents.scss'
 import { WhiteLogoLetters } from '@/config/assets'
-import { AlignJustify } from 'lucide-react';
+import { AlignJustify, Moon, Sun } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 
 const Header: React.FC = () => {
     const [showMenu, setShowMenu] = useState(false);
+    const [isDark, setIsDark] = useState(() => localStorage.getItem('theme') === 'dark');
+
+    useEffect(() => {
+        if (isDark) {
+            document.body.classList.add('dark');
+            localStorage.setItem('theme', 'dark');
+        } else {
+            document.body.classList.remove('dark');
+            localStorage.setItem('theme', 'light');
+        }
+    }, [isDark]);
 
     return (
         <div className='header'>
@@ -18,13 +29,24 @@ const Header: React.FC = () => {
                         <NavLink to="/" className={({ isActive }) => isActive ? "active-link" : ""}>Inicio</NavLink>
                     </li>
                     <li>
-                        <NavLink to="/about" className={({ isActive }) => isActive ? "active-link" : ""}>About</NavLink>
+                        <NavLink to="/about" className={({ isActive }) => isActive ? "active-link" : ""}>Nosotros</NavLink>
                     </li>
                 </ul>
             </nav>
-            <div className='show-only-on-mobile hamburger-icon' onClick={() => setShowMenu(!showMenu)}>
-                <AlignJustify size={28} color="white" />
+            <div className="header-actions">
+                <button
+                    className="theme-toggle"
+                    onClick={() => setIsDark(!isDark)}
+                    aria-label="Alternar modo oscuro"
+                >
+                    {isDark ? <Sun size={20} /> : <Moon size={20} />}
+                </button>
+
+                <div className='show-only-on-mobile hamburger-icon' onClick={() => setShowMenu(!showMenu)}>
+                    <AlignJustify size={28} color="white" />
+                </div>
             </div>
+
             <nav className={`header-menu-mobile ${showMenu ? 'header-menu-mobile-show' : ''}`}>
                 <ul>
                     <li>

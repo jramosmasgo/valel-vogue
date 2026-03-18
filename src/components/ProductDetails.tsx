@@ -11,8 +11,10 @@ interface ProductDetailsProps {
 const ProductDetails: React.FC<ProductDetailsProps> = ({ product }) => {
     if (!product) return null;
 
-    const encodedMessage = encodeURIComponent(`Hola, estoy interesado en el producto: ${product.name} - S/. ${product.price.toFixed(2)} que vi en el catálogo de Valel Vogue.`);
-    const whatsappUrl = `https://wa.me/51999999999?text=${encodedMessage}`; // User can update this number later
+    const numero = "51988440617";
+    const productUrl = `${window.location.origin}/producto/${product.id}`;
+    const mensaje = `Quiero tener mas informacion sobre: ${product.name}\n\n${productUrl}`;
+    const whatsappUrl = `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`;
 
     return (
         <Dialog.Portal>

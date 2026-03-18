@@ -6,13 +6,13 @@
 
 // Hero Section
 .about-hero {
-    min-height: 40vh;
+    min-height: 25vh;
     display: flex;
     align-items: center;
     justify-content: center;
     text-align: center;
     background: linear-gradient(135deg, rgba(var(--color-primary-rgb, 230, 57, 70), 0.05) 0%, rgba(var(--color-primary-rgb, 230, 57, 70), 0.1) 100%);
-    padding: 3rem 1.5rem;
+    padding: 2rem 1rem;
     position: relative;
 
     @media (min-width: 768px) {
@@ -33,7 +33,7 @@
     .hero-title {
         font-size: clamp(3rem, 10vw, 5rem);
         font-weight: 900;
-        margin-bottom: 1rem;
+        margin-bottom: 0.5rem;
         line-height: 1;
         letter-spacing: -2px;
 
@@ -67,8 +67,8 @@
 // Story Section
 .about-story {
     max-width: 1200px;
-    margin: 3rem auto;
-    padding: 0 1.5rem;
+    margin: 1rem auto;
+    padding: 0 1rem;
 
     @media (min-width: 768px) {
         margin: 6rem auto;
@@ -78,7 +78,7 @@
     .story-grid {
         display: grid;
         grid-template-columns: 1fr;
-        gap: 2rem;
+        gap: 1.5rem;
         align-items: center;
 
         @media (min-width: 968px) {

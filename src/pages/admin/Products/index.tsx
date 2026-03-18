@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Edit2, Power, Trash2, X } from 'lucide-react';
+import { Plus, Edit2, Power, Trash2, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import './styles.scss';
 
 import { doc } from 'firebase/firestore';
@@ -27,6 +27,10 @@ const ProductsManagement: React.FC = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [filterSuperCategory, setFilterSuperCategory] = useState('');
     const [filterCategory, setFilterCategory] = useState('');
+
+    // Pagination
+    const PAGE_SIZE = 20;
+    const [currentPage, setCurrentPage] = useState(1);
 
     useEffect(() => {
         loadData();
@@ -57,6 +61,14 @@ const ProductsManagement: React.FC = () => {
         const matchesSuperCategory = filterSuperCategory === '' || product.supercategory.id === filterSuperCategory;
         return matchesName && matchesCategory && matchesSuperCategory;
     });
+
+    const totalPages = Math.ceil(filteredProducts.length / PAGE_SIZE);
+    const paginatedProducts = filteredProducts.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+
+    // Reset to page 1 on filter change
+    const handleSearch = (val: string) => { setSearchTerm(val); setCurrentPage(1); };
+    const handleSuperFilter = (val: string) => { setFilterSuperCategory(val); setCurrentPage(1); };
+    const handleCatFilter = (val: string) => { setFilterCategory(val); setCurrentPage(1); };
 
     const handleToggleStatus = async (product: Product) => {
         try {
@@ -116,6 +128,18 @@ const ProductsManagement: React.FC = () => {
 
         if (!categoryId || !supercategoryId) {
             alert('Debes seleccionar categoría y supercategoría.');
+            setIsLoading(false);
+            return;
+        }
+
+        if (sizes.length === 0) {
+            alert('Debes seleccionar al menos una talla.');
+            setIsLoading(false);
+            return;
+        }
+
+        if (colors.length === 0) {
+            alert('Debes ingresar al menos un color.');
             setIsLoading(false);
             return;
         }
@@ -180,12 +204,12 @@ const ProductsManagement: React.FC = () => {
                     type='text'
                     placeholder='Buscar por nombre...'
                     value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
+                    onChange={(e) => handleSearch(e.target.value)}
                     className='filter-input'
                 />
                 <select
                     value={filterSuperCategory}
-                    onChange={(e) => setFilterSuperCategory(e.target.value)}
+                    onChange={(e) => handleSuperFilter(e.target.value)}
                     className='filter-select'
                 >
                     <option value="">Todas las Supercategorías</option>
@@ -195,7 +219,7 @@ const ProductsManagement: React.FC = () => {
                 </select>
                 <select
                     value={filterCategory}
-                    onChange={(e) => setFilterCategory(e.target.value)}
+                    onChange={(e) => handleCatFilter(e.target.value)}
                     className='filter-select'
                 >
                     <option value="">Todas las Categorías</option>
@@ -221,7 +245,7 @@ const ProductsManagement: React.FC = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {filteredProducts.map((product) => (
+                                {paginatedProducts.map((product) => (
                                     <tr key={product.id}>
                                         <td data-label="Producto">
                                             <div className='product-cell'>
@@ -272,6 +296,50 @@ const ProductsManagement: React.FC = () => {
                 )}
             </div>
 
+            {/* Pagination */}
+            {totalPages > 1 && (
+                <div className='products-pagination'>
+                    <span className='pagination-info'>
+                        {(currentPage - 1) * PAGE_SIZE + 1}–{Math.min(currentPage * PAGE_SIZE, filteredProducts.length)} de {filteredProducts.length} productos
+                    </span>
+                    <div className='pagination-controls'>
+                        <button
+                            className='page-btn'
+                            onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                            disabled={currentPage === 1}
+                        >
+                            <ChevronLeft size={16} />
+                        </button>
+                        {Array.from({ length: totalPages }, (_, i) => i + 1)
+                            .filter(p => p === 1 || p === totalPages || Math.abs(p - currentPage) <= 2)
+                            .reduce<(number | 'ellipsis')[]>((acc, p, idx, arr) => {
+                                if (idx > 0 && p - (arr[idx - 1] as number) > 1) acc.push('ellipsis');
+                                acc.push(p);
+                                return acc;
+                            }, [])
+                            .map((p, idx) =>
+                                p === 'ellipsis'
+                                    ? <span key={`e${idx}`} className='page-ellipsis'>…</span>
+                                    : <button
+                                        key={p}
+                                        className={`page-btn ${currentPage === p ? 'active' : ''}`}
+                                        onClick={() => setCurrentPage(p as number)}
+                                    >
+                                        {p}
+                                    </button>
+                            )
+                        }
+                        <button
+                            className='page-btn'
+                            onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                            disabled={currentPage === totalPages}
+                        >
+                            <ChevronRight size={16} />
+                        </button>
+                    </div>
+                </div>
+            )}
+
             {/* Modal for Creating / Editing */}
             {isModalOpen && (
                 <div className='admin-modal-overlay'>
@@ -284,9 +352,9 @@ const ProductsManagement: React.FC = () => {
                         </div>
 
                         <div className='modal-body'>
-                            <form id="productForm" onSubmit={handleSubmit} className='contact-form' style={{ background: 'transparent', padding: 0, boxShadow: 'none', border: 'none', maxWidth: 'none' }}>
-                                <div className='form-grid' style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
-                                    <div className='form-group' style={{ gridColumn: '1 / -1' }}>
+                            <form id="productForm" onSubmit={handleSubmit} className='product-form'>
+                                <div className='form-grid'>
+                                    <div className='form-group full'>
                                         <label className='form-label'>Nombre de la Prenda</label>
                                         <input name="name" className='form-input' required defaultValue={selectedProduct?.name || ''} placeholder="Ej. Casaca Denim" />
                                     </div>
@@ -313,19 +381,19 @@ const ProductsManagement: React.FC = () => {
 
                                     <div className='form-group'>
                                         <label className='form-label'>Precio (S/.)</label>
-                                        <input name="price" className='form-input' type='number' step='0.01' defaultValue={selectedProduct?.price || ''} placeholder="0.00" />
+                                        <input name="price" className='form-input' type='number' step='0.01' defaultValue={selectedProduct?.price || ''} placeholder="0.00" required />
                                     </div>
 
                                     <div className='form-group'>
                                         <label className='form-label'>Colores (separa por comas)</label>
-                                        <input name="colors" className='form-input' defaultValue={selectedProduct?.colors?.join(', ') || ''} placeholder="Ej. rojo, azul, negro" />
+                                        <input name="colors" className='form-input' defaultValue={selectedProduct?.colors?.join(', ') || ''} placeholder="Ej. rojo, azul, negro" required />
                                     </div>
 
-                                    <div className='form-group' style={{ gridColumn: '1 / -1' }}>
+                                    <div className='form-group full'>
                                         <label className='form-label'>Tallas</label>
-                                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', padding: '12px', background: 'var(--color-surface)', border: '1px solid var(--color-border)', borderRadius: '12px' }}>
+                                        <div className='form-sizes-group'>
                                             {catalogData.sizes.filter(s => s.status === 'active').map(size => (
-                                                <label key={size.id} style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', fontSize: '0.9rem', padding: '4px 8px', background: 'white', borderRadius: '8px', border: '1px solid var(--color-border)' }}>
+                                                <label key={size.id} className='size-checkbox-label'>
                                                     <input
                                                         type="checkbox"
                                                         name="sizes"
@@ -338,21 +406,21 @@ const ProductsManagement: React.FC = () => {
                                         </div>
                                     </div>
 
-                                    <div className='form-group' style={{ gridColumn: '1 / -1' }}>
+                                    <div className='form-group full'>
                                         <label className='form-label'>Subir Imagen</label>
-                                        <div style={{ display: 'flex', gap: '10px' }}>
-                                            <input type="file" accept="image/*" onChange={(e) => setImageFile(e.target.files?.[0] || null)} className='form-input' style={{ flex: 1 }} />
+                                        <div className='image-input-container'>
+                                            <input type="file" accept="image/*" onChange={(e) => setImageFile(e.target.files?.[0] || null)} className='form-input' />
                                         </div>
                                         {selectedProduct?.image && !imageFile && (
-                                            <div style={{ marginTop: '10px' }}>
-                                                <img src={selectedProduct.image} alt="Vista previa" style={{ height: '80px', borderRadius: '8px', objectFit: 'cover' }} />
+                                            <div className='image-preview-container'>
+                                                <img src={selectedProduct.image} alt="Vista previa" />
                                             </div>
                                         )}
                                     </div>
 
-                                    <div className='form-group' style={{ gridColumn: '1 / -1' }}>
-                                        <label className='form-label'>Descripción</label>
-                                        <textarea name="description" className='form-textarea' required defaultValue={selectedProduct?.description || ''} placeholder='Información detallada sobre la tela, el ajuste, etc.'></textarea>
+                                    <div className='form-group full'>
+                                        <label className='form-label'>Descripción (Opcional)</label>
+                                        <textarea name="description" className='form-textarea' defaultValue={selectedProduct?.description || ''} placeholder='Información detallada sobre la tela, el ajuste, etc.'></textarea>
                                     </div>
                                 </div>
                             </form>

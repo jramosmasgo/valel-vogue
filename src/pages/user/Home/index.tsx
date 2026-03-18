@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import * as Dialog from '@radix-ui/react-dialog';
 import "./styles.scss";
 import CardProduct from '@/components/CardProduct';
@@ -15,14 +16,51 @@ const HomeUser: React.FC = () => {
     const [products, setProducts] = useState<Product[]>([]);
     const [superCategories, setSuperCategories] = useState<SuperCategory[]>([]);
     const [categories, setCategories] = useState<Category[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
 
-    const [selectedSuperCategory, setSelectedSuperCategory] = useState<string>('all');
-    const [selectedCategory, setSelectedCategory] = useState<string>('all');
+    const [searchParams, setSearchParams] = useSearchParams();
+
+    const [selectedSuperCategory, setSelectedSuperCategory] = useState<string>(searchParams.get('superCategory') || searchParams.get('supercategory') || 'all');
+    const [selectedCategory, setSelectedCategory] = useState<string>(searchParams.get('category') || 'all');
+
+    useEffect(() => {
+        const sc = searchParams.get('superCategory') || searchParams.get('supercategory') || 'all';
+        const cat = searchParams.get('category') || 'all';
+        setSelectedSuperCategory(sc);
+        setSelectedCategory(cat);
+    }, [searchParams]);
+
+    const handleSuperCategoryChange = (sc: string) => {
+        setSelectedSuperCategory(sc);
+        setSelectedCategory('all');
+        const newParams = new URLSearchParams(searchParams);
+        if (sc === 'all') {
+            newParams.delete('superCategory');
+            newParams.delete('supercategory');
+        } else {
+            newParams.set('superCategory', sc);
+            newParams.delete('supercategory');
+        }
+        newParams.delete('category');
+        setSearchParams(newParams);
+    };
+
+    const handleCategoryChange = (cat: string) => {
+        setSelectedCategory(cat);
+        const newParams = new URLSearchParams(searchParams);
+        if (cat === 'all') {
+            newParams.delete('category');
+        } else {
+            newParams.set('category', cat);
+        }
+        setSearchParams(newParams);
+    };
 
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
     useEffect(() => {
         const loadCatalogData = async () => {
+            setIsLoading(true);
             try {
                 const [prods, cats, superCats] = await Promise.all([
                     getProducts(),
@@ -37,6 +75,8 @@ const HomeUser: React.FC = () => {
                 setSuperCategories(superCats.filter(sc => sc.status !== false && sc.status !== 'inactive'));
             } catch (error) {
                 console.error("Error loading source data:", error);
+            } finally {
+                setIsLoading(false);
             }
         };
 
@@ -77,7 +117,7 @@ const HomeUser: React.FC = () => {
             <div className='home-user-navigation'>
                 <button
                     className={selectedSuperCategory === 'all' ? 'nav-active' : ''}
-                    onClick={() => { setSelectedSuperCategory('all'); setSelectedCategory('all'); }}
+                    onClick={() => handleSuperCategoryChange('all')}
                 >
                     Todos
                 </button>
@@ -85,7 +125,7 @@ const HomeUser: React.FC = () => {
                     <button
                         key={sc.id}
                         className={selectedSuperCategory === sc.id ? 'nav-active' : ''}
-                        onClick={() => { setSelectedSuperCategory(String(sc.id)); setSelectedCategory('all'); }}
+                        onClick={() => handleSuperCategoryChange(String(sc.id))}
                     >
                         {sc.name}
                     </button>
@@ -95,7 +135,7 @@ const HomeUser: React.FC = () => {
             <div className='home-user-categories'>
                 <button
                     className={selectedCategory === 'all' ? 'category-active' : ''}
-                    onClick={() => setSelectedCategory('all')}
+                    onClick={() => handleCategoryChange('all')}
                 >
                     Todos
                 </button>
@@ -103,7 +143,7 @@ const HomeUser: React.FC = () => {
                     <button
                         key={cat.id}
                         className={selectedCategory === cat.id ? 'category-active' : ''}
-                        onClick={() => setSelectedCategory(String(cat.id))}
+                        onClick={() => handleCategoryChange(String(cat.id))}
                     >
                         {cat.name}
                     </button>
@@ -111,18 +151,29 @@ const HomeUser: React.FC = () => {
             </div>
 
             <div className='product-grid'>
-                {filteredProducts.map(product => (
-                    <CardProduct
-                        key={product.id}
-                        product={product}
-                        onClick={() => handleProductClick(product)}
-                    />
-                ))}
+                {isLoading ? (
+                    Array.from({ length: 8 }).map((_, i) => (
+                        <div key={i} className='product-skeleton'>
+                            <div className='skeleton-image'></div>
+                            <div className='skeleton-info'></div>
+                        </div>
+                    ))
+                ) : (
+                    <>
+                        {filteredProducts.map(product => (
+                            <CardProduct
+                                key={product.id}
+                                product={product}
+                                onClick={() => handleProductClick(product)}
+                            />
+                        ))}
 
-                {filteredProducts.length === 0 && (
-                    <div style={{ padding: '2rem', textAlign: 'center', gridColumn: '1 / -1', color: 'var(--color-text-muted)' }}>
-                        No se encontraron prendas para esta categoría.
-                    </div>
+                        {filteredProducts.length === 0 && (
+                            <div style={{ padding: '2rem', textAlign: 'center', gridColumn: '1 / -1', color: 'var(--color-text-muted)' }}>
+                                No se encontraron prendas para esta categoría.
+                            </div>
+                        )}
+                    </>
                 )}
             </div>
 

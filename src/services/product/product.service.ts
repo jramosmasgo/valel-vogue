@@ -1,6 +1,7 @@
 import {
     collection,
     doc,
+    getDoc,
     getDocs,
     addDoc,
     updateDoc,
@@ -50,4 +51,14 @@ export const incrementProductViews = async (id: string): Promise<void> => {
     await updateDoc(docRef, {
         views: increment(1)
     });
+};
+
+export const getProductById = async (id: string): Promise<Product | null> => {
+    const docRef = doc(db, 'products', id);
+    const snapshot = await getDoc(docRef);
+    if (!snapshot.exists()) return null;
+    return {
+        id: snapshot.id,
+        ...snapshot.data()
+    } as Product;
 };
