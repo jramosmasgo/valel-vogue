@@ -12,7 +12,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product }) => {
     if (!product) return null;
 
     const numero = "51988440617";
-    const productUrl = `${window.location.origin}/producto/${product.id}`;
+    const productUrl = `${window.location.origin}/og/${product.id}`;
     const mensaje = `Quiero tener mas informacion sobre: ${product.name}\n\n${productUrl}`;
     const whatsappUrl = `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`;
 
